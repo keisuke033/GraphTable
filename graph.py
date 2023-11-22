@@ -9,8 +9,9 @@ class Graph:
     def __init__(self, file_name, begin_sheet_name, end_sheet_name) :
         self.file_name = file_name
         self.data = list()
-        self.begin_sheet_name = begin_sheet_name -2
+        self.begin_sheet_name = begin_sheet_name -1
         self.end_sheet_name = end_sheet_name
+        self.sheet_length = self.end_sheet_name - self.begin_sheet_name
         for i in range(self.begin_sheet_name, self.end_sheet_name):
             self.sheet_name = i
             self.data.append(pd.read_excel(self.file_name, sheet_name=self.sheet_name))
@@ -19,8 +20,8 @@ class Graph:
     # データの確認
     def print_data(self):
         # excel ファイルの読み込み
-        for i in range(self.begin_sheet_name, self.end_sheet_name):
-            print("Sheet{} : ".format(i))
+        for i in range(self.sheet_length):
+            print("Sheet{} : ".format(self.begin_sheet_name + i))
             print(self.data[i].head())
             print("-------------------------------------------------")
         # グラフの設定の読み込み
@@ -40,13 +41,13 @@ class Graph:
         self.sheet_number = list()
         self.length = len(x)
         for i in range(len(x)) :
-            self.sheet_number.append(x[i][0]) # シート番号
+            self.sheet_number.append(x[i][0] -1) # シート番号
         self.x = list()
         for i in range(len(x)) :
-            self.x.append(self.data[x[i][0]].columns[x[i][1]]) #x軸の列名
+            self.x.append(self.data[i].columns[x[i][1]]) #x軸の列名
         self.y = list()
         for i in range(len(y)) :
-            self.y.append(self.data[y[i][0]].columns[y[i][1]]) #Y軸の列名
+            self.y.append(self.data[i].columns[y[i][1]]) #Y軸の列名
         if isXLog: 
             plt.xscale('log') # X軸を対数軸に設定
         if isYLog:
@@ -58,7 +59,7 @@ class Graph:
     def draw_graph(self, xlabel, ylabel, label):
         # データからグラフをプロット
         for i in range(self.length):
-            plt.plot(self.data[self.sheet_number[i]][self.x[i]], self.data[self.sheet_number[i]][self.y[i]], label=label[i])
+            plt.plot(self.data[i][self.x[i]], self.data[i][self.y[i]], marker='o', markersize=4, label=label[i])
             plt.legend() # 凡例を表示
         # グラフにラベルを追加
         plt.xlabel(xlabel)  # X軸のラベルを適切なものに変更
